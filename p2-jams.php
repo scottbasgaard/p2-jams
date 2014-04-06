@@ -81,8 +81,8 @@ class P2_Jams {
 	public function enqueue_scripts() {
 		
 		$p2_jams_data = array(
-			'ajaxURL' => admin_url( 'admin-ajax.php' ),
-			'ajax_nonce' => wp_create_nonce( 'p2_jams_nonce' )
+			'ajaxurl' => admin_url( 'admin-ajax.php' ),
+			'ajaxnonce' => wp_create_nonce( 'p2-jams-nonce' )
 		);
 
 		wp_enqueue_script( 'p2-jams', plugins_url( 'js/p2-jams.js' , __FILE__ ), array('jquery') );
@@ -123,19 +123,14 @@ class P2_Jams {
 		if ( ! $user_id || ! $lastfm_user = $this->get_lastfm_user( $user_id ) )
 			return false;
 		
-		// Set up CURL for scrobble API
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, "ws.audioscrobbler.com/1.0/user/". $lastfm_user ."/recenttracks.rss");
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-		$rss = curl_exec($ch);
-		curl_close($ch);
-		$rss = simplexml_load_string($rss);	
-		$cnt = 1;
+		// Scrobble API Request
+		$request = wp_remote_get( "http://ws.audioscrobbler.com/1.0/user/". $lastfm_user ."/recenttracks.rss" );
+		$data = wp_remote_retrieve_body( $request );
+		$rss = simplexml_load_string( $data );
+		$count = 1;
 		
 		// Get latest song and return it
-		for ( $i=0; $i<$cnt; $i++ ) {
+		for ( $i=0; $i < $count; $i++ ) {
 			
 			$url = $rss->channel->item[$i]->link;
 			$title = $rss->channel->item[$i]->title;
@@ -242,7 +237,7 @@ class P2_Jams {
 	 * @access public
 	 */
 	public function ajax_check_jams() {
-		check_ajax_referer( 'p2_jams_nonce', 'security' );
+		// check_ajax_referer( 'p2-jams-nonce', 'security' );
 		echo json_encode( $this->get_jammers( true ) );
 		exit;
 	}

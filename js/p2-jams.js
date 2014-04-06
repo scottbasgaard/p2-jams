@@ -4,7 +4,7 @@ jQuery(function($) {
 
 	    setInterval(function(){
 
-			$.post( p2_jams.ajaxURL, { action: 'p2_jams', security: p2_jams.ajax_nonce }, function(data) {
+			$.post( p2_jams.ajaxurl, { action: 'p2_jams', security: p2_jams.ajaxnonce }, function(data) {
 			
 				var parsedJSON = $.parseJSON(data);
 				var jamsList = $('#p2-jams');
