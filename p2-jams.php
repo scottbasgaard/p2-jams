@@ -3,7 +3,7 @@
  * Plugin Name: P2 Jams
  * Plugin URI: http://scottbasgaard.com/
  * Description: "P2 Jams" is a way to show what everybody is listening to on P2.
- * Version: 1.0
+ * Version: 1.0.1
  * Author: Scott Basgaard
  * Author URI: http://scottbasgaard.com/
  * License: GPLv2 or later
@@ -237,7 +237,7 @@ class P2_Jams {
 	 * @access public
 	 */
 	public function ajax_check_jams() {
-		// check_ajax_referer( 'p2-jams-nonce', 'security' );
+		check_ajax_referer( 'p2-jams-nonce', 'security' );
 		echo json_encode( $this->get_jammers( true ) );
 		exit;
 	}
