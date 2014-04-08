@@ -13,6 +13,10 @@ License: GPLv2 or later
 
 P2 Jams shows what everybody is currently listening to on your P2 site.
 
+= Get involved =
+
+Contribute to the P2 Jams source code on the [GitHub](https://github.com/scottbasgaard/p2-jams).
+
 == Installation ==
 
 1. Install P2 Jams either via the WordPress.org plugin directory, or by uploading the files to your server.
