@@ -36,8 +36,7 @@ class P2_Jams_Widget extends WP_Widget {
 		if ( ! empty( $title ) )
 			echo $args['before_title'] . $title . $args['after_title'];
 		
-		if ( $jammers = $p2_jams->get_jammers() )
-			echo $jammers;
+		// ajax request will populate the jammers
 		
 		echo $args['after_widget'];
 	}
