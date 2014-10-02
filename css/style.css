@@ -4,6 +4,10 @@
     display: inline;
 }
 
+#postbox #p2-jams img {
+	display: inline;
+}
+
 #p2-jams img {
 	margin-right: 1em;
 }
