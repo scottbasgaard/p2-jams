@@ -37,6 +37,7 @@ class P2_Jams_Widget extends WP_Widget {
 			echo $args['before_title'] . $title . $args['after_title'];
 		
 		// ajax request will populate the jammers
+		echo '<ul id="p2-jams"></ul>';
 		
 		echo $args['after_widget'];
 	}
