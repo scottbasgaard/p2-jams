@@ -206,7 +206,7 @@ class P2_Jams {
 
 				if ( $listener = $this->get_jamming( $user->ID ) ) {
 					$output .= '<li data-p2-jams="' . esc_attr( $user->ID ) . '">';
-					$output .= '<a href="http://www.last.fm/user/' . esc_attr( $this->get_lastfm_user( $user->ID ) ) . '">';
+					$output .= '<a href="http://www.last.fm/user/' . esc_attr( $this->get_lastfm_user( $user->ID ) ) . '" target="_blank">';
 					$output .= get_avatar( $user->user_email, 32 );
 					$output .= '</a>';
 					$output .= '<p>' . $listener . '</p>';
