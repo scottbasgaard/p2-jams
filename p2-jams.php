@@ -120,12 +120,22 @@ class P2_Jams {
 	 */
 	private function get_jamming( $user_id = false ) {
 
-		if ( ! $user_id || ! $lastfm_user = $this->get_lastfm_user( $user_id ) )
+		if ( ! $user_id || ! $lastfm_user = $this->get_lastfm_user( $user_id ) ) {
 			return false;
-
-		// Scrobble API Request
-		$request = wp_remote_get( "http://ws.audioscrobbler.com/1.0/user/". $lastfm_user ."/recenttracks.rss" );
-		$data = wp_remote_retrieve_body( $request );
+		}
+		
+		$data = get_transient( 'p2-jams-for-' . $user_id );
+		
+		if ( ! $data ) {
+		
+			// Scrobble API Request
+			$request = wp_remote_get( "http://ws.audioscrobbler.com/1.0/user/". $lastfm_user ."/recenttracks.rss" );
+			$data = wp_remote_retrieve_body( $request );
+			
+			set_transient( 'p2-jams-for-' . $user_id, $data, 5 * MINUTE_IN_SECONDS );
+			
+		}
+		
 		$rss = simplexml_load_string( $data );
 		$count = 1;
 
