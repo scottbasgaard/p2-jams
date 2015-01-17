@@ -3,7 +3,7 @@
  * Plugin Name: P2 Jams
  * Plugin URI: http://scottbasgaard.com/
  * Description: "P2 Jams" is a way to show what everybody is listening to on P2.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Scott Basgaard
  * Author URI: http://scottbasgaard.com/
  * License: GPLv2 or later
