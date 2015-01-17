@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: p2, jams, listening, music, spotify, lastfm
 Requires at least: 4.1
 Tested up to: 4.1
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv3 or later
 
 Show everybody what you are listening to on P2
