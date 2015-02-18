@@ -16,3 +16,7 @@
 	float: left;
     width: 50%;
 }
+
+#p2-jams li {
+	display: inline-block;
+}
