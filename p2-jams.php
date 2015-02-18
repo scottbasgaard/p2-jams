@@ -264,13 +264,3 @@ function P2_Jams() {
 
 // Global for backwards compatibility.
 $GLOBALS['p2_jams'] = P2_Jams();
-
-
-
-function var_error_log($object){
-    ob_start();                    // start buffer capture
-    var_dump($object);             // dump the values
-    $contents = ob_get_contents(); // put the buffer into a variable
-    ob_end_clean();                // end capture
-    error_log($contents);          // log contents of the result of var_dump($object)
-}
