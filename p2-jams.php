@@ -3,13 +3,13 @@
  * Plugin Name: P2 Jams
  * Plugin URI: http://scottbasgaard.com/
  * Description: "P2 Jams" is a way to show what everybody is listening to on P2.
- * Version: 1.0.2
+ * Version: 1.1.0
  * Author: Scott Basgaard
  * Author URI: http://scottbasgaard.com/
- * License: GPLv2 or later
+ * License: GPLv3 or later
  */
 
-/*  Copyright 2014  Scott Basgaard  (email : mail@scottbasgaard.com)
+/*  Copyright 2015  Scott Basgaard  (email : mail@scottbasgaard.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as
@@ -67,11 +67,11 @@ class P2_Jams {
 	 *
 	 * @access public
 	 */
-    public function __construct() {
+	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_filter( 'user_contactmethods', array( $this, 'add_lastfm_user' ) );
 		add_action( 'wp_ajax_p2_jams', array( $this, 'ajax_check_jams' ) );
-    }
+	}
 
 	/**
 	 * Register and enqueue CSS and JS
@@ -81,8 +81,8 @@ class P2_Jams {
 	public function enqueue_scripts() {
 
 		$p2_jams_data = array(
-			'ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'ajaxnonce' => wp_create_nonce( 'p2-jams-nonce' )
+			'ajaxurl'   => admin_url('admin-ajax.php'),
+			'ajaxnonce' => wp_create_nonce('p2-jams-nonce')
 		);
 
 		wp_enqueue_script( 'p2-jams', plugins_url( 'js/p2-jams.js' , __FILE__ ), array('jquery') );
@@ -109,7 +109,9 @@ class P2_Jams {
 	 * @return mixed
 	 */
 	private function get_lastfm_user( $user_id ) {
-		return get_the_author_meta( 'p2_jams_lastfm', $user_id );;
+
+		return get_the_author_meta( 'p2_jams_lastfm', $user_id );
+
 	}
 
 	/**
@@ -123,33 +125,39 @@ class P2_Jams {
 		if ( ! $user_id || ! $lastfm_user = $this->get_lastfm_user( $user_id ) ) {
 			return false;
 		}
-		
-		$data = get_transient( 'p2-jams-for-' . $user_id );
-		
-		if ( ! $data ) {
-		
-			// Scrobble API Request
-			$request = wp_remote_get( "http://ws.audioscrobbler.com/1.0/user/". $lastfm_user ."/recenttracks.rss" );
-			$data = wp_remote_retrieve_body( $request );
-			
-			set_transient( 'p2-jams-for-' . $user_id, $data, 5 * MINUTE_IN_SECONDS );
-			
+
+		// Scrobble API Request
+		$request = wp_remote_get( "http://ws.audioscrobbler.com/1.0/user/". $lastfm_user ."/recenttracks.rss" );
+
+		// Check for error
+		if ( empty( $request ) || is_wp_error( $request ) || 200 != wp_remote_retrieve_response_code( $request ) || ! isset( $request['body'] ) ) {
+			return false;
 		}
-		
+
+		$data = wp_remote_retrieve_body( $request );
+
+		// Check for error
+		if ( is_wp_error( $data ) ) {
+			return false;
+		}
+
 		$rss = simplexml_load_string( $data );
+
 		$count = 1;
 
 		// Get latest song and return it
 		for ( $i=0; $i < $count; $i++ ) {
 
-			$url = $rss->channel->item[$i]->link;
-			$title = $rss->channel->item[$i]->title;
-			$pubDate = $rss->channel->item[$i]->pubDate;
-			$pubDate_time = strtotime($pubDate);
+			$url          = $rss->channel->item[$i]->link;
+			$title        = $rss->channel->item[$i]->title;
+			$pubDate      = $rss->channel->item[$i]->pubDate;
+			$pubDate_time = strtotime( $pubDate );
 
 			// Only return song if it's being listened to
 			if ( $this->is_jamming( $pubDate_time ) ) {
-				return '<span>' . __('Jaming to:', 'p2-jams' ) . '</span> <a title="' . esc_attr( $title ) . '" href="' . esc_url( $url ) . '" target="_blank">' . $title . '</a>';
+				return '<span>' . __('Jamming to:', 'p2-jams' ) . '</span> <a title="' . esc_attr( $title ) . '" href="' . esc_url( $url ) . '" target="_blank">' . $title . '</a>';
+			} else {
+				return '<span>' . __('Was last jamming to:', 'p2-jams' ) . '</span> <a title="' . esc_attr( $title ) . '" href="' . esc_url( $url ) . '" target="_blank">' . $title . '</a>';
 			}
 
 		}
@@ -169,24 +177,9 @@ class P2_Jams {
 
 		$etime = time() - $ptime;
 
-		// If < 1 we know the user is currently jamming to the song
-		if ( $etime < 1 )
+		// If < 200 seconds we know the user is currently jamming to the song
+		if ( $etime < 200 ) {
 			return true;
-
-		$a = array(	12 * 30 * 24 * 60 * 60	=>  'year',
-					30 * 24 * 60 * 60		=>  'month',
-					24 * 60 * 60			=>  'day',
-					60 * 60				=>  'hour',
-					60					=>  'minute',
-					1					=>  'second'
-		);
-
-		foreach ( $a as $secs => $str ) {
-			$d = $etime / $secs;
-			if ( $d >= 1 ) {
-				$r = round( $d );
-				if ( $r < 3 && $str == "second" ) return true; // User is jamming now
-			}
 		}
 
 		return false; // User isn't jamming to anything
@@ -202,15 +195,16 @@ class P2_Jams {
 	public function get_jammers( $items_as_array = false ) {
 
 		$output = false;
-		$items = array();
+		$items  = array();
 
 		$users_args = array();
-	    $users = get_users( $users_args );
+	    $users      = get_users( $users_args );
 
 		if ( $users ) {
 
-			if ( ! $items_as_array )
+			if ( ! $items_as_array ) {
 				$output .= '<ul id="p2-jams">';
+			}
 
 			foreach ( $users as $user ) {
 
@@ -230,14 +224,16 @@ class P2_Jams {
 
 			}
 
-			if ( ! $items_as_array )
+			if ( ! $items_as_array ) {
 				$output .= '</ul>';
-			else
+			} else {
 				$output = $items;
+			}
 		}
 
-		if ( $output )
+		if ( $output ) {
 			return $output;
+		}
 
 		return false;
 

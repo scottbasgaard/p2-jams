@@ -1,10 +1,10 @@
 === P2 Jams ===
-Contributors: scottbasgaard
+Contributors: scottbasgaard, willmot
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MFZXL72ETR7H2
 Tags: p2, jams, listening, music, spotify, lastfm
-Requires at least: 4.1
-Tested up to: 4.1
-Stable tag: 1.0.2
+Requires at least: 4.2.2
+Tested up to: 4.2.2
+Stable tag: 1.1.0
 License: GPLv3 or later
 
 Show everybody what you are listening to on P2
@@ -45,6 +45,12 @@ If you like my plugins feel free to donate [here](https://www.paypal.com/cgi-bin
 
 == Changelog ==
 
+= 1.1.0 =
+* Show latest song a user has listened to.
+* Formatting cleanup.
+* Styling fixes.
+* Update readme.txt
+
 = 1.0.2 =
 * Update readme.txt
 
@@ -55,6 +61,12 @@ If you like my plugins feel free to donate [here](https://www.paypal.com/cgi-bin
 * Initial release
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+* Show latest song a user has listened to.
+* Formatting cleanup.
+* Styling fixes.
+* Update readme.txt
 
 = 1.0.2 =
 * Update readme.txt
